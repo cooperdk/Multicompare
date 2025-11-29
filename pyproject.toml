@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sync-image-comparator"
+version = "0.1.0"
+description = "A synchronized image viewer for comparing RAW and standard images across folders."
+authors = [
+  { name = "cooperdk", email = "peter@pehrson.dk" },
+]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "Pillow",
+    "rawpy",
+    "numpy",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/cooperdk/multicompare"
+
+# This allows you to run the program by typing 'image-compare' in the terminal
+# provided you name your python file 'compare_pro.py' and it has a main() function.
+[project.scripts]
+multicompare = "src.gui:main"

@@ -3,6 +3,26 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Generated assets
+assets/
+
+# Nuitka/Build Artifacts
+# Ignore the temporary build folders
+build/multicompare.build/
+build/multicompare.dist/
+build/multicompare.onefile-build/
+build/onefile-build/
+*.build/
+*.dist/
+*.onefile-build/
+
+# Ignore the final executables inside the build folder
+build/MultiCompare.exe
+build/multicompare
+build/MultiCompare.app
+scripts/MultiCompare.exe
+scripts/multicompare
+scripts/MultiCompare.app
 # C extensions
 *.so
 
