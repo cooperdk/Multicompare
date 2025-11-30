@@ -68,6 +68,12 @@ class SyncImageComparator:
         self.current_index = -1
         self.output_dir = self.state.last_output_dir
         
+        # Image Specific
+        self.cached_images = []
+        self.raw_images = []
+        self.CACHED_MAX_SIDE = 2500 
+        self.INITIAL_ZOOM_SCALE = 0.55
+        
         # View Data
         self.raw_images = []
         self.images_ref = []
@@ -263,25 +269,17 @@ class SyncImageComparator:
                 messagebox.showinfo("Result", "No filenames matched across the selected folders.")
 
     def load_image_file(self, path):
-        MAX_W = 1200
+        """Loads the FULL image (no resizing here)."""
         try:
-            img = None
             if path.lower().endswith(RAW_EXTS):
                 with rawpy.imread(path) as raw:
                     rgb = raw.postprocess(use_camera_wb=True)
-                    img = Image.fromarray(rgb)
+                    return Image.fromarray(rgb)
             else:
-                img = Image.open(path)
-            
-            if img:
-                if img.width > MAX_W:
-                    ratio = MAX_W / float(img.width)
-                    h = int(float(img.height) * ratio)
-                    img = img.resize((MAX_W, h), Image.Resampling.BILINEAR)
-                return img
-        except Exception:
+                return Image.open(path)
+        except Exception as e:
+            print(f"Error loading {path}: {e}")
             return None
-        return None
 
     def load_group(self):
         if not self.sorted_basenames: return
@@ -289,22 +287,27 @@ class SyncImageComparator:
         basename = self.sorted_basenames[self.current_index]
         total_sets = len(self.sorted_basenames)
         
+        # Title Updates
         self.lbl_current_file.config(text=basename)
         self.lbl_status.config(text=f"{self.current_index + 1} / {total_sets}")
         self.root.title(f"MultiCompare - {basename}")
 
+        # Clear Caches
         for w in self.grid_frame.winfo_children(): w.destroy()
         self.canvases = []
         self.raw_images = []
+        self.cached_images = [] # Clear the cache!
         self.images_ref = []
         
         paths = self.grouped_files[basename][:10]
 
+        # Setup Grid
         n = len(paths)
         cols = 3 if n > 4 else (2 if n > 1 else 1)
         if n > 6: cols = 4
         
-        self.scale = 1.0
+        # Set Initial Scale (0.55 = 55% zoom)
+        self.scale = self.INITIAL_ZOOM_SCALE
         self.pan_x = 0
         self.pan_y = 0
         
@@ -320,12 +323,33 @@ class SyncImageComparator:
             cv.pack(fill=tk.BOTH, expand=True)
             self.canvases.append(cv)
             
-            img = self.load_image_file(p)
-            if img:
-                self.raw_images.append(img)
-            else:
-                self.raw_images.append(Image.new('RGB', (100,100), 'gray'))
+            # 1. Load Full-Resolution Image
+            full_img = self.load_image_file(p)
 
+            if full_img:
+                self.raw_images.append(full_img)
+                
+                # 2. CREATE THE CACHED, SCREEN-SIZED IMAGE
+                # This is the image we will resize during pan/zoom for speed.
+                
+                # Calculate required downsample size (e.g., max 2500px on the long side)
+                w, h = full_img.size
+                if w > self.CACHED_MAX_SIDE or h > self.CACHED_MAX_SIDE:
+                    ratio = min(self.CACHED_MAX_SIDE / w, self.CACHED_MAX_SIDE / h)
+                    nw, nh = int(w * ratio), int(h * ratio)
+                    
+                    # Use a high-quality filter once for the cache image
+                    cached_img = full_img.resize((nw, nh), Image.Resampling.LANCZOS)
+                else:
+                    cached_img = full_img.copy()
+
+                self.cached_images.append(cached_img)
+            else:
+                self.raw_images.append(None)
+                self.cached_images.append(Image.new('RGB', (100,100), 'gray'))
+
+
+            # Button and Bindings (remain the same)
             btn = tk.Button(frame, text="SELECT", bg="#2196F3", fg="white",
                             command=lambda path=p: self.select_and_next(path))
             btn.pack(side=tk.BOTTOM, fill=tk.X)
@@ -339,6 +363,38 @@ class SyncImageComparator:
 
         self.root.update_idletasks()
         self.redraw_all()
+        
+    def redraw_all(self):
+        """Redraws all images using the smaller cached image."""
+        self.images_ref = []
+        for i, cached_raw in enumerate(self.cached_images):
+            cv = self.canvases[i]
+            cv.delete("all")
+            
+            # Check for placeholder/error image
+            if cached_raw is None:
+                continue 
+
+            w, h = cached_raw.size
+            nw, nh = int(w * self.scale), int(h * self.scale)
+            
+            if nw > 0 and nh > 0:
+                # PERFORMANCE CRITICAL: Only resizing the smaller cached image.
+                resized = cached_raw.resize((nw, nh), Image.Resampling.NEAREST) 
+                tk_img = ImageTk.PhotoImage(resized)
+                self.images_ref.append(tk_img)
+                
+                cw = cv.winfo_width()
+                ch = cv.winfo_height()
+                
+                # Center calculation
+                cx = cw // 2
+                cy = ch // 2
+                
+                x = cx - (nw // 2) + self.pan_x
+                y = cy - (nh // 2) + self.pan_y
+                
+                cv.create_image(x, y, anchor="nw", image=tk_img)
 
     def select_and_next(self, path):
         if not self.output_dir:
@@ -350,31 +406,6 @@ class SyncImageComparator:
             self.next_group()
         else:
             messagebox.showerror("Error", msg)
-
-    def redraw_all(self):
-        self.images_ref = []
-        for i, raw in enumerate(self.raw_images):
-            cv = self.canvases[i]
-            cv.delete("all")
-            
-            w, h = raw.size
-            nw, nh = int(w*self.scale), int(h*self.scale)
-            
-            if nw > 0 and nh > 0:
-                resized = raw.resize((nw, nh)) 
-                tk_img = ImageTk.PhotoImage(resized)
-                self.images_ref.append(tk_img)
-                
-                cw = cv.winfo_width()
-                ch = cv.winfo_height()
-                
-                cx = cw // 2
-                cy = ch // 2
-                
-                x = cx - (nw // 2) + self.pan_x
-                y = cy - (nh // 2) + self.pan_y
-                
-                cv.create_image(x, y, anchor="nw", image=tk_img)
 
     def start_pan(self, event):
         self.drag_start = (event.x, event.y)
