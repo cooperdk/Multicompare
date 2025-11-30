@@ -15,6 +15,7 @@ build/onefile-build/
 *.build/
 *.dist/
 *.onefile-build/
+nuitka-crash-report.xml
 
 # Ignore the final executables inside the build folder
 build/MultiCompare.exe

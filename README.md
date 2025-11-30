@@ -1,10 +1,15 @@
 # MultiCompare
 
-**MultiCompare** is a specialized, synchronized image viewer designed for photographers and editors. It allows you to visually compare images across multiple folders simultaneously.
+**MultiCompare** is a specialized, synchronized image viewer designed for photographers, AI image creators and editors. It allows you to visually compare images across multiple folders simultaneously.
 
-Unlike standard viewers, MultiCompare features a **Smart Filtering Engine** that automatically groups files by filename. It ignores unmatched files and only presents sets of images that exist in at least two of the selected folders, making it perfect for comparing backups, different edits, or raw-vs-jpg workflows.
+Unlike standard viewers, MultiCompare features a **Smart Filtering Engine** that automatically groups files **by filename**. It ignores unmatched files and only presents sets of images that exist with the same base filename in at least two of the selected folders, making it perfect for comparing batch generated AI images, different edits, or raw-vs-jpg workflows.
 
 I wrote the script because I have an iterating ComfyUI workflow which outputs a set of images with the same names for SillyTavern expressions (28 files) and needed a way to select the best image after a number of executions. I found no software that supports this feature, so I decided to create this app. It will display all images on the same screen and panning or zooming one image causes the app to automatically pan and zoom the rest automatically.
+
+### The ComfyUI workflow
+
+I am polishing it and it will be included as soon as possible. In the meantime, use any that you wish (there are a few out there).
+My first workflow will use QWEN Image Edit to adjust a base image according to expressions (including gesticulation, using LLM to generate 8 words for the expression), and remove the background.
 
 ## Key Features
 
