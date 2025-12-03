@@ -1,6 +1,6 @@
 # MultiCompare
 
-**MultiCompare** is a specialized, synchronized image viewer designed for photographers, AI image creators and editors. It allows you to visually compare images across multiple folders simultaneously.
+**MultiCompare** is a completely portable specialized *synchronized image viewer and handler* designed for photographers, AI image creators and editors. It allows you to visually compare images across multiple folders simultaneously.
 
 Unlike standard viewers, MultiCompare features a **Smart Filtering Engine** that automatically groups files **by filename**. It ignores unmatched files and only presents sets of images that exist with the same base filename in at least two of the selected folders, making it perfect for comparing batch generated AI images, different edits, or raw-vs-jpg workflows.
 
@@ -23,6 +23,13 @@ My first workflow will use QWEN Image Edit to adjust a base image according to e
 *   **Cross-Platform:** Works natively on Windows, macOS, and Linux.
 
 ---
+
+## Supported platforms
+
+### Windows, Linux and Mac OS X
+
+The app should be able to run on Mac OS X. It has been tested to run on Linux (Ubuntu) and Windows 11.
+It will run faster in the release version as it is converted to C code and compiled (apart from some Python modules which are embedded as bytecode).
 
 ## Installation (Running from Source)
 
@@ -87,7 +94,8 @@ Once matches are found, the first set is displayed.
 
 ## Building the executable
 
-This project includes a custom build system using **Nuitka**. This compiles the Python code into a standalone executable (`.exe` on Windows, binary on Linux, `.app` bundle on macOS) that requires no installation.
+If you can't wait until a release a built, you should be able to built it yourself.
+This project makes use of a custom build system using **Nuitka**. This converts the Python code to C and compiles it into a standalone executable (`.exe` on Windows, binary on Linux, `.app` bundle on macOS) with embedded libraries.
 
 ### 1. The build script
 I have provided a helper script in the `scripts/` folder that handles icon generation and compilation flags automatically.
