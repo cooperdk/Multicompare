@@ -31,7 +31,7 @@ This workflow will use QWEN Image Edit to adjust a base image according to expre
 The app should be able to run on Mac OS X. It has been tested to run on Linux (Ubuntu) and Windows 11.
 It will run faster in the release version as it is converted to C code and compiled (apart from some Python modules which are embedded as bytecode).
 
-## Installation (Running from Source)
+## Running from Source
 
 ### Prerequisites
 
@@ -111,14 +111,17 @@ python scripts/build.py
 2.  **Compilation:** It runs Nuitka with optimized flags (hiding the console on Windows, bundling Numpy/Tkinter).
 3.  **Output:** The final executable is placed in the **`scripts/`** folder (or `scripts/dist_mac` on macOS).
 
-### 3. Building the Linux executable using Dockerfile
+### 3. Building the Linux executable manually or using Dockerfile
 
-On Windows, you need to have Docker Desktop installed on running.
-On Linux, open your terminal in the project root and build the dockerfile using:
+If you do it manually, you know what you're doing and know which build tools you require.
+
+For building using a Docker container:
+
+* Open your terminal in the project root and build the dockerfile using:
 ```bash
 docker build -t multicompile-linux .
 ```
-Then, run the container, mapping your local project root to the container's /app/ folder. The container will then deliver the GUI-based app in your project folder (possibly in scripts/).  Use the command:
+* Then, run the container, mapping your local project root to the container's /app/ folder. The container will then deliver the GUI-based app in your project folder (possibly in scripts/).  Use the command:
 ```bash
 docker run --rm -v ${PWD}:/app multicompile-linux
 ```
