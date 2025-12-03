@@ -47,7 +47,7 @@ def build():
         icon_path = os.path.join(assets_dir, "icon.ico")
         cmd.extend([
             "--onefile",
-            #"--windows-console-mode=disable",
+            "--windows-console-mode=disable",
             "--output-filename=MultiCompare.exe",
             f"--windows-icon-from-ico={icon_path}",
             "--assume-yes-for-downloads",
