@@ -8,8 +8,8 @@ I wrote the script because I have an iterating ComfyUI workflow which outputs a 
 
 ### The ComfyUI workflow
 
-I am polishing it and it will be included as soon as possible. In the meantime, use any that you wish (there are a few out there).
-My first workflow will use QWEN Image Edit to adjust a base image according to expressions (including gesticulation, using LLM to generate 8 words for the expression), and remove the background.
+I am polishing the first workflow to support this tool and it will be included as soon as possible. In the meantime, use any that you wish (there are a few out there).
+This workflow will use QWEN Image Edit to adjust a base image according to expressions (including gesticulation, using LLM to generate 5-15 words for the expression, depending on the LLM used), and remove the background. I use dolphin3.0-llama3.1-8b to feed the prompt with more vivid expressions.
 
 ## Key Features
 
@@ -18,8 +18,8 @@ My first workflow will use QWEN Image Edit to adjust a base image according to e
 *   **Smart Auto-Filter:** Automatically scans selected folders and only displays filenames that appear in **at least two** locations.
 *   **Broad Format Support:** Native support for standard images (`JPG`, `PNG`, `TIFF`) and Camera RAW formats (`ARW`, `CR2`, `NEF`, `DNG`, etc.) via `rawpy`.
 *   **Adaptive Grid:** Automatically arranges up to 10 images per screen based on the number of matches found.
-* **Culling workflow:** Lets the user select the best image from a set to automatically copy it to the output folder and move to the next set of matched images.
-* **Persistency:** The app remembers window size and position/fullscreen status, the last used output directory, and theme preferences.
+*   **Culling workflow:** Lets the user select the best image from a set to automatically copy it to the output folder and move to the next set of matched images.
+*   **Persistency:** The app remembers window size and position/fullscreen status, the last used output directory, and theme preferences.
 *   **Cross-Platform:** Works natively on Windows, macOS, and Linux.
 
 ---
